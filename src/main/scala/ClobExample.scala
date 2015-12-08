@@ -71,19 +71,20 @@ object ClobExample extends App {
   val action = for {
     _      <- ddl.create
     _      <- metadatavalues ++= testData
+    all    <- metadatavalues.result
     values <- metadatavalues.filter(_.textValue === "dog").result
-  } yield values
-
-  exec(action).foreach { m =>
-    println(s"""id: ${m.id}
-               |itemId:      ${m.itemId}
-               | fieldid:    ${m.fieldId}
-               | textvalue:  ${m.textValue}
-               | lang:       ${m.lang}
-               | place:      ${m.place}
-               | authority:  ${m.authority}
-               | confidence: ${m.confidence}""".stripMargin)
-
+  } yield {
+    all.foreach(println)
+    values
   }
 
-}
+  exec(action).foreach { m =>
+    println(s"""id:          ${m.id}
+               |itemId:      ${m.itemId}
+               |fieldid:    ${m.fieldId}
+               |textvalue:  ${m.textValue}
+               |lang:       ${m.lang}
+               |place:      ${m.place}
+               |authority:  ${m.authority}
+               |confidence: ${m.confidence}""".stripMargin)
+ }}
